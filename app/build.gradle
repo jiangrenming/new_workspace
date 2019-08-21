@@ -1,0 +1,81 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.xb.lvxmgl"
+        ndk {
+            //选择要添加的对应cpu类型的.so库。
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86'
+            // 还可以添加 , 'mips', 'mips64', 'x86_64', 'x86'
+        }
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+    }
+
+    lintOptions {
+        disable 'InvalidPackage'
+        checkReleaseBuilds false
+        abortOnError false
+        disable 'GoogleAppIndexingWarning', 'MissingTranslation', 'ExtraTranslation'
+    }
+
+    //解决编译时内存溢出
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
+    packagingOptions {
+        exclude 'META-INF/proguard/androidx-annotations.pro'
+    }
+
+    // 签名文件配置
+    signingConfigs {
+        myConfig {
+            storeFile file('../app/dangjian.jks')
+            storePassword 'dangjian'
+            keyAlias 'dangjian'
+            keyPassword 'dangjian'
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig android.signingConfigs.myConfig
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //自定义属性
+            buildConfigField "boolean", "IS_TEST", RELEASE_IS_TEST
+            buildConfigField "String", "BASE_URL", RELEASE_BASE_URL
+        }
+
+        debug {
+            signingConfig android.signingConfigs.myConfig
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //自定义属性
+            buildConfigField "boolean", "IS_TEST", DEBUG_IS_TEST
+            buildConfigField "String", "BASE_URL", DEBUG_BASE_URL
+        }
+    }
+
+    //开启Java1.8 能够使用lambda表达式
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation files('libs/tbs_sdk_thirdapp_v3.6.0.1371_43624_sharewithdownload_withoutGame_obfs_20181106_121046.jar')
+    implementation "com.android.support:recyclerview-v7:28.0.0"
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+   // implementation files('libs/okio-1.14.0.jar')
+    implementation files('libs/gson-2.2.4.jar')
+    implementation files('libs/MyBase64_V1.0.jar')
+}
